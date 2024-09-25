@@ -6,7 +6,6 @@ def read_matrix_from_file(file_name, N):
     with open(file_name, 'r') as file:
         matrix = []
         for line in file:
-            # Разбиваем строку по запятым и преобразуем элементы в целые числа
             row = list(map(int, line.strip().split(',')))
             matrix.append(row)
         if len(matrix) != N or any(len(row) != N for row in matrix):
@@ -20,36 +19,41 @@ def print_matrix(matrix, name):
         print(row)
     print()
 
+# Определение областей
+def is_area1(i, j, N):
+    return i > j and i + j < N - 1
+
+def is_area2(i, j, N):
+    return i < j and i + j < N - 1
+
+def is_area3(i, j, N):
+    return i < j and i + j > N - 1
+
+def is_area4(i, j, N):
+    return i > j and i + j > N - 1
+
 # Деление матрицы на области
 def divide_matrix(matrix, N):
     area1, area2, area3, area4 = [], [], [], []
     for i in range(N):
         for j in range(N):
-            if i > j and i + j < N - 1:  # Область 1
+            if is_area1(i, j, N):
                 area1.append((i, j))
-            elif i < j and i + j < N - 1:  # Область 2
+            elif is_area2(i, j, N):
                 area2.append((i, j))
-            elif i < j and i + j > N - 1:  # Область 3
+            elif is_area3(i, j, N):
                 area3.append((i, j))
-            elif i > j and i + j > N - 1:  # Область 4
+            elif is_area4(i, j, N):
                 area4.append((i, j))
     return area1, area2, area3, area4
 
 # Подсчет количества чисел больше K в четных столбцах области 1
 def count_greater_than_K_area1(matrix, area1, K):
-    count = 0
-    for i, j in area1:
-        if j % 2 == 0 and matrix[i][j] > K:  # Четные столбцы
-            count += 1
-    return count
+    return sum(1 for i, j in area1 if j % 2 == 0 and matrix[i][j] > K)
 
 # Сумма чисел в нечетных строках области 3
 def sum_odd_rows_area3(matrix, area3):
-    total_sum = 0
-    for i, j in area3:
-        if i % 2 != 0:  # Нечетные строки
-            total_sum += matrix[i][j]
-    return total_sum
+    return sum(matrix[i][j] for i, j in area3 if i % 2 != 0)
 
 # Симметричный обмен областей 1 и 3
 def swap_areas_symmetrically(matrix, area1, area3):
@@ -63,32 +67,23 @@ def swap_areas_nonsymmetrically(matrix, area2, area3):
 
 # Умножение матриц
 def multiply_matrices(A, B, N):
-    result = [[0] * N for _ in range(N)]
-    for i in range(N):
-        for j in range(N):
-            result[i][j] = sum(A[i][k] * B[k][j] for k in range(N))
-    return result
+    return [[sum(A[i][k] * B[k][j] for k in range(N)) for j in range(N)] for i in range(N)]
 
 # Транспонирование матрицы
 def transpose_matrix(matrix, N):
-    transposed = [[matrix[j][i] for j in range(N)] for i in range(N)]
-    return transposed
+    return [[matrix[j][i] for j in range(N)] for i in range(N)]
 
 # Вычисление выражения A * F - K * AT
 def calculate_expression(A, F, AT, K, N):
-    # A * F
     AF = multiply_matrices(A, F, N)
-    # K * AT
     KAT = [[K * AT[i][j] for j in range(N)] for i in range(N)]
-    # A * F - K * AT
-    result = [[AF[i][j] - KAT[i][j] for j in range(N)] for i in range(N)]
-    return result
+    return [[AF[i][j] - KAT[i][j] for j in range(N)] for i in range(N)]
 
 def main():
     # Ввод данных
     K = int(input("Введите число K: "))
     N = int(input("Введите размерность матрицы N: "))
-    file_name = input("Введите имя файла с матрицей: ")
+    file_name = "Матрица.txt"
 
     # Чтение матрицы A из файла
     A = read_matrix_from_file(file_name, N)
@@ -109,9 +104,9 @@ def main():
 
     # Условие для обмена областями
     if count_area1 > sum_area3:
-        swap_areas_symmetrically(F, area1, area3)  # Обмен областей 1 и 3 симметрично
+        swap_areas_symmetrically(F, area1, area3)
     else:
-        swap_areas_nonsymmetrically(F, area2, area3)  # Обмен областей 2 и 3 несимметрично
+        swap_areas_nonsymmetrically(F, area2, area3)
     
     print_matrix(F, "F")
     
