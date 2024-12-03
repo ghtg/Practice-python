@@ -1,11 +1,14 @@
+'''
+Конвейер сборки состоит из 10 технологических мест. 
+На 4 из них требуется силовая подготовка (мужчины). Конвейер должен работать в 2 смены. 
+Сформировать все возможные варианты рабочего расписания, если в цехе работает 20 рабочих: 12 женщин и 8 мужчин.
+'''
 import tkinter as tk
 from tkinter import messagebox, scrolledtext
 import itertools
 
-# Функция для генерации всех возможных расписаний
 def generate_schedules():
     try:
-        # Получаем входные данные из текстовых полей
         num_men = int(entry_men.get())
         num_women = int(entry_women.get())
         positions = int(entry_positions.get())
@@ -29,10 +32,8 @@ def generate_schedules():
         # Очистка текстового поля перед отображением новых результатов
         text_output.delete(1.0, tk.END)
 
-        # Отображение количества найденных комбинаций
         text_output.insert(tk.END, f"Найдено {len(all_schedules)} вариантов расписания.\n\n")
         
-        # Отображение первых 5 вариантов
         text_output.insert(tk.END, "Примеры первых 5 вариантов:\n")
         for i, schedule in enumerate(all_schedules[:5]):
             text_output.insert(tk.END, f"Вариант {i+1}: {schedule}\n")
